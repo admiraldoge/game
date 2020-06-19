@@ -22,6 +22,7 @@ dependencies:
   flare_flutter: ^2.0.3
   flare_dart: ^2.3.4
   nima: ^1.0.5
+  audioplayers: ^0.15.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -79,3 +80,7 @@ flutter:
     - family: Museo
       fonts:
           - asset: fonts/MuseoModerno-ExtraBold.ttf
+          - asset: fonts/MuseoModerno-Light.ttf
+            weight: 300
+          - asset: fonts/MuseoModerno-ExtraLight.ttf
+            weight: 200

@@ -23,6 +23,8 @@ class _PetalState extends State<Petal> {
 
   Timer timer;
 
+  String animation;
+
   startTimer() {
     timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       /*if(condition) {
@@ -45,6 +47,11 @@ class _PetalState extends State<Petal> {
   @override
   initState() {
     startTimer();
+    if(widget.xMove > 0) {
+      animation = 'rotateRight';
+    } else {
+      animation = 'rotateLeft';
+    }
     super.initState();
   }
 
@@ -52,18 +59,31 @@ class _PetalState extends State<Petal> {
   Widget build(BuildContext context) {
     return  Positioned(
       top: widget.y + dy -50, //Substractin 50 to construc the flower in th the centre of click
-      left: widget.x + dx- -50,
+      left: widget.x + dx -50,
       height: 100,
       width: 100,
       child: FlatButton(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
+        child: Text(
+          widget.id.toString(),
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 25,
+              fontFamily: 'Museo'
+          )
+        ),
+        /*
         child: SizedBox(
           child: FlareActor(
               'assets/flower.flr',
             animation: 'rotateRight',
           ),
         ),
+
+         */
         onPressed: (){
           print('Flower tapped: '+widget.id.toString());
           widget.disposeFlower(widget.id);
