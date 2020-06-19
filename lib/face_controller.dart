@@ -154,8 +154,21 @@ class FaceController extends FlareController {
   }
   // Transform the [Offset] into a [Vec2D].
   // If no caret is provided, lower the [_hasFocus] flag.
-  void lookAt(double x,double y) {
-    print("LOOK AT "+x.toString()+" - "+y.toString());
+  void lookAt(double x,double y, double xDimension,double yDimension) {
+    //print("LOOK AT "+x.toString()+" - "+y.toString());
+    /*if(x != 0 ){
+      x *= 0.7;
+    } else {
+      x += (x*0.3);
+    }
+
+     */
+    if(y > yDimension*0.70) {
+      y *= 1;
+    } else {
+      y = yDimension*0.70 - ((yDimension*0.70 - y).abs()*1.8);
+    }
+    //print("NEW LOOK AT: "+x.toString()+" - "+y.toString());
     _caretGlobal[0] = x;
     _caretGlobal[1] = y;
     _hasFocus = true;

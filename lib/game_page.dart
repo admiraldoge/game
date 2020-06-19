@@ -46,7 +46,7 @@ class _GameState extends State<GamePage> {
         timer.cancel();
       }
       //print('Creating flower!');
-      double newFlowerYCoordinate = new Random().nextInt((MediaQuery.of(context).size.height).toInt() - 100) + (MediaQuery.of(context).size.height * 0.2);
+      double newFlowerYCoordinate = new Random().nextInt((MediaQuery.of(context).size.height).toInt() - 50) + (MediaQuery.of(context).size.height * 0.2);
       double newFlowerXCoordinate = new Random().nextInt(2).toDouble();
       double movement = 0.2;
       if(newFlowerXCoordinate > 0.5) {
@@ -69,7 +69,7 @@ class _GameState extends State<GamePage> {
         });
         new Timer(const Duration(seconds: 7), (){
           //print('Creating flower!');
-          double newFlowerYCoordinate = new Random().nextInt((MediaQuery.of(context).size.height).toInt() - 100) + (MediaQuery.of(context).size.height * 0.2);
+          double newFlowerYCoordinate = new Random().nextInt((MediaQuery.of(context).size.height).toInt() - 50) + (MediaQuery.of(context).size.height * 0.2);
           double newFlowerXCoordinate = new Random().nextInt(2).toDouble();
           if(newFlowerXCoordinate > 0.5) {
             newFlowerXCoordinate = MediaQuery.of(context).size.width;
@@ -82,7 +82,7 @@ class _GameState extends State<GamePage> {
             nextHardXCoordinate = newFlowerXCoordinate;
             nextHardYCoordinate = newFlowerYCoordinate;
           });
-          _faceController.lookAt(newFlowerXCoordinate, newFlowerYCoordinate);
+          _faceController.lookAt(newFlowerXCoordinate, newFlowerYCoordinate,MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
         });
       }
       createFlower(newFlowerXCoordinate, newFlowerYCoordinate, movement);
@@ -92,7 +92,7 @@ class _GameState extends State<GamePage> {
   stopEasyTimer() {
     easyTimer.cancel();
   }
-  
+
   void setTentaclePos(double x, double y) {
     print('Updating tentacle pos to '+x.toString()+" - "+y.toString());
     //tentaclePosX = x;
@@ -144,8 +144,6 @@ class _GameState extends State<GamePage> {
 
     ];
     startEasyTimer();
-    //startHardTimer();
-    //startEyesTimer();
     super.initState();
   }
   @override
@@ -179,20 +177,6 @@ class _GameState extends State<GamePage> {
                         controller: _faceController,
                       )
                   ),
-                  Positioned(
-                      height: 200,
-                      top: tentaclePosY,
-                      left: tentaclePosX,
-                      width: 200,
-                      child: FlareActor(
-                          "assets/tentacle3.flr",
-                          shouldClip: false,
-                          fit: BoxFit.contain,
-                          artboard: "Artboard",
-                          controller: _tentacleController,
-                          color: Colors.green,
-                      )
-                  ),
                   ...flowerList
                   ,
                   Positioned(
@@ -221,9 +205,11 @@ class _GameState extends State<GamePage> {
                         },
                       )
                   ),
-                  MyWidget(
+                  /*MyWidget(
                     moveTarget: _faceController.lookAt
                   )
+                  
+                   */
                 ],
               )),
         )

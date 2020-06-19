@@ -37,7 +37,7 @@ class MyWidget extends StatelessWidget {
     var y = details.globalPosition.dy;
     print("tap up " + x.toString() + ", " + y.toString());
     //moveTarget(x,y);
-    moveTarget(x,y);
+    moveTarget(x,y,737.0,392.0);
   }
   _onPanStart(DragStartDetails details){
     x = details.globalPosition.dx;
