@@ -20,10 +20,9 @@ class PlayButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 150.0,
-      height: 60.0,
+      height: 100.0,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25.0),
-        //color: Colors.black
+          borderRadius: BorderRadius.circular(25.0)
       ),
       child: Material(
         color: Colors.transparent,

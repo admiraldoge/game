@@ -22,26 +22,34 @@ class _GameState extends State<GamePage> {
   TentacleController _tentacleController;
   double tentaclePosX;
   double tentaclePosY;
-  List<Petal> petals = [];
+  List<Petal> flowerList = [];
   bool createFlowers = true;
+  int flowerId = 0;
+  int points;
 
   Timer timer;
 
   startTimer() {
-    timer = Timer.periodic(const Duration(seconds: 5), (timer){
+    timer = Timer.periodic(const Duration(seconds: 10), (timer){
+      if(flowerId == 0) {
+        print('Screen height: ' + MediaQuery.of(context).size.height.toString());
+        print('Screen width: ' + MediaQuery.of(context).size.width.toString());
+      }
       if (!createFlowers) {
         timer.cancel();
       }
       print('Creating flower!');
-      print('Controller'+_homePaintController.toString());
       double newFlowerYCoordinate = new Random().nextInt((MediaQuery.of(context).size.height).toInt() - 100) + (MediaQuery.of(context).size.height * 0.2);
       double newFlowerXCoordinate = new Random().nextInt(2).toDouble();
-      double movement = 1;
-      if(newFlowerXCoordinate == 1) {
+      double movement = 0.2;
+      if(newFlowerXCoordinate > 0.5) {
         newFlowerXCoordinate = MediaQuery.of(context).size.width;
+        print('Flower to appear on the right');
         movement *= -1;
+      }else {
+        print('Flower to appear on the left');
       }
-      setPetalPos(newFlowerXCoordinate, newFlowerYCoordinate, movement);
+      createFlower(newFlowerXCoordinate, newFlowerYCoordinate, movement);
     });
   }
 
@@ -59,20 +67,31 @@ class _GameState extends State<GamePage> {
     });
   }
 
-  void setPetalPos(double x, double y, double xMove) {
+  void createFlower(double x, double y, double xMove) {
     print('Setting new flower in '+x.toString()+" - "+y.toString()+" - "+xMove.toString());
     //tentaclePosX = x;
     //tentaclePosY = y;
-    print('Number of petals: '+petals.length.toString());
-    if(petals.length > 10)createFlowers = false;
+    print('Number of petals: '+flowerList.length.toString());
+    if(flowerList.length > 10)createFlowers = false;
     setState(() {
-      petals.add(new Petal(
+      flowerList.add(new Petal(
           x: x,
           y: y,
           tx: x,
           ty: y,
-          xMove: xMove
+          xMove: xMove,
+          id: flowerId,
+          disposeFlower: this.deleteFlower
       ));
+    });
+    flowerId++;
+  }
+
+  void deleteFlower(int id) {
+    print('Erasing flower ' + id.toString());
+    setState(() {
+      flowerList.removeWhere((flower) => flower.id == id);
+      points++;
     });
   }
 
@@ -83,14 +102,9 @@ class _GameState extends State<GamePage> {
     _tentacleController.lookAt(150,10);
     tentaclePosX = 100;
     tentaclePosY = 100;
-    petals = [
-      new Petal(
-          x: 600,
-          y: 100,
-          tx: 100,
-          ty: 100,
-          xMove: -4
-      )
+    points = 0;
+    flowerList = [
+
     ];
     startTimer();
 
@@ -140,20 +154,20 @@ class _GameState extends State<GamePage> {
                           color: Colors.green,
                       )
                   ),
-                  ...petals
+                  ...flowerList
                   ,
-                  MyWidget(
-                    moveTarget: _tentacleController.lookAt,
-                    moveTentacle: setPetalPos,
-                  ),
                   Positioned(
                       top: 20,
-                      left: ((MediaQuery.of(context).size.width)-100),
+                      left: ((MediaQuery.of(context).size.width)-70),
                       child: Text(
-                        '123',
+                        points.toString(),
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 30,
+                            fontFamily: 'Museo'
+                        ),
                       )
                   ),
                 ],

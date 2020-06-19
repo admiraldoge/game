@@ -7,7 +7,9 @@ import 'package:flare_flutter/flare_actor.dart';
 class Petal extends StatefulWidget  {
   final double x,y,tx,ty;
   final double xMove;
-  const Petal ({ Key key, this.x,this.y,this.tx,this.ty, this.xMove }): super(key: key);
+  final int id;
+  final Function disposeFlower;
+  const Petal ({ Key key, this.x,this.y,this.tx,this.ty, this.xMove, this.id, this.disposeFlower }): super(key: key);
   @override
   _PetalState createState() => _PetalState();
 }
@@ -54,6 +56,8 @@ class _PetalState extends State<Petal> {
       height: 100,
       width: 100,
       child: FlatButton(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
         child: SizedBox(
           child: FlareActor(
               'assets/flower.flr',
@@ -61,7 +65,8 @@ class _PetalState extends State<Petal> {
           ),
         ),
         onPressed: (){
-          print('Pressed!');
+          print('Flower tapped: '+widget.id.toString());
+          widget.disposeFlower(widget.id);
         },
       ),
     );

@@ -75,3 +75,7 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
   assets:
     - assets/
+  fonts:
+    - family: Museo
+      fonts:
+          - asset: fonts/MuseoModerno-ExtraBold.ttf

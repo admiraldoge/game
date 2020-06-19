@@ -45,14 +45,15 @@ class _PaintState extends State<HomePage> {
                     fit: BoxFit.cover,
                   ),
                   Positioned(
-                      top: ((MediaQuery.of(context).size.height)/2)-30,
+                      top: ((MediaQuery.of(context).size.height)/2)-40,
                       left: ((MediaQuery.of(context).size.width)/2)-75,
                       child: PlayButton(
                           child: Text("Play",
                               style: TextStyle(
-                                  fontFamily: "RobotoMedium",
+                                  fontFamily: "Museo",
                                   fontSize: 50,
-                                  color: Colors.white)
+                                  color: Colors.black
+                              )
                           ),
                           onPressed: () {
                             Navigator.pushNamed(context, '/game');
