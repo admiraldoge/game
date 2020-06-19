@@ -37,7 +37,7 @@ class MyWidget extends StatelessWidget {
     var y = details.globalPosition.dy;
     print("tap up " + x.toString() + ", " + y.toString());
     //moveTarget(x,y);
-    moveTentacle(x,y);
+    moveTarget(x,y);
   }
   _onPanStart(DragStartDetails details){
     x = details.globalPosition.dx;

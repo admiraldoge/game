@@ -29,7 +29,7 @@ class FaceController extends FlareController {
   bool _hasFocus = false;
 
   // Project gaze forward by this many pixels.
-  static const double _projectGaze = 120.0;
+  static const double _projectGaze = 10.0;
   ///our fill animation, so we can animate this each time we add/reduce water intake
   FlareAnimationLayer _idle;
   ///our ice cube that moves on the Y Axis based on current water intake
@@ -48,7 +48,7 @@ class FaceController extends FlareController {
     }
     _idle = FlareAnimationLayer()
       ..animation = _artboard.getAnimation("idle")
-      ..mix = 1.0;
+      ..mix = 0.5;
   }
 
   @override
@@ -67,38 +67,42 @@ class FaceController extends FlareController {
     //moveTarget
     Vec2D targetTranslation;
 
-      //print('FaceOrigin: '+_faceOrigin[0].toString()+" - "+_faceOrigin[1].toString());
-      //print('FaceOriginLocal: '+_faceOriginLocal[0].toString()+" - "+_faceOriginLocal[1].toString());
-      //print('Actual target position: '+_target.x.toString()+" - "+_target.y.toString());
-      // Get caret in Flare world space.
-      Vec2D.transformMat2D(_caretWorld, _caretGlobal, _globalToFlareWorld);
-      /*print('Transforming '+_caretGlobal[0].toString()+" - "+_caretGlobal[1].toString()+""
-          " to "+_caretWorld[0].toString()+" - "+_caretWorld[1].toString());
+    //print('FaceOrigin: '+_faceOrigin[0].toString()+" - "+_faceOrigin[1].toString());
+    //print('FaceOriginLocal: '+_faceOriginLocal[0].toString()+" - "+_faceOriginLocal[1].toString());
+    //print('Actual target position: '+_target.x.toString()+" - "+_target.y.toString());
+    // Get caret in Flare world space.
+    Vec2D.transformMat2D(_caretWorld, _caretGlobal, _globalToFlareWorld);
+    /*print('Transforming '+_caretGlobal[0].toString()+" - "+_caretGlobal[1].toString()+""
+        " to "+_caretWorld[0].toString()+" - "+_caretWorld[1].toString());
 
-       */
-      //_caretWordl = wordlTouch
-      // To make it more interesting, we'll also add a sinusoidal vertical offset.
-      /*_caretWorld[1] +=
-          sin(new DateTime.now().millisecondsSinceEpoch / 300.0) * 70.0;
+     */
+    //_caretWordl = wordlTouch
+    // To make it more interesting, we'll also add a sinusoidal vertical offset.
+    _caretWorld[1] +=
+        cos(new DateTime.now().millisecondsSinceEpoch / 300.0) * 70.0;
 
-       */
+    // Compute direction vector.
 
-      // Compute direction vector.
+    Vec2D toCaret = Vec2D.subtract(Vec2D(), _caretWorld, _faceOrigin);
+    //print('The direction vector is '+toCaret[0].toString()+" - "+toCaret[1].toString());
+    Vec2D.normalize(toCaret, toCaret);
+    Vec2D.scale(toCaret, toCaret, _projectGaze);
 
-      Vec2D toCaret = Vec2D.subtract(Vec2D(), _caretWorld, _faceOrigin);
-      //print('The direction vector is '+toCaret[0].toString()+" - "+toCaret[1].toString());
-      //Vec2D.normalize(toCaret, toCaret);
-      //Vec2D.scale(toCaret, toCaret, _projectGaze);
+    //Move ayes a bit Upwards
+    Vec2D myVector = new Vec2D();
+    myVector[0] = 0;
+    myVector[1] = 1;
+    //Vec2D.add(toCaret, myVector ,_faceOrigin);
 
-      // Compute the transform that gets us in face "ctrl_face" space.
-      Mat2D toFaceTransform = Mat2D();
-      if (Mat2D.invert(toFaceTransform, _target.parent.worldTransform)) {
-        // Put toCaret in local space, note we're using a direction vector
-        // not a translation so transform without translation
-        Vec2D.transformMat2(toCaret, toCaret, toFaceTransform);
-        // Our final "ctrl_face" position is the original face translation plus this direction vector
-        targetTranslation = Vec2D.add(Vec2D(), toCaret, _faceOriginLocal);
-      }
+    // Compute the transform that gets us in face "ctrl_face" space.
+    Mat2D toFaceTransform = Mat2D();
+    if (Mat2D.invert(toFaceTransform, _target.parent.worldTransform)) {
+      // Put toCaret in local space, note we're using a direction vector
+      // not a translation so transform without translation
+      Vec2D.transformMat2(toCaret, toCaret, toFaceTransform);
+      // Our final "ctrl_face" position is the original face translation plus this direction vector
+      targetTranslation = Vec2D.add(Vec2D(), toCaret, _faceOriginLocal);
+    }
 
     // We could just set _target.translation to targetTranslation, but we want to animate it smoothly to this target
     // so we interpolate towards it by a factor of elapsed time in order to maintain speed regardless of frame rate.

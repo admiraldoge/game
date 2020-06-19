@@ -8,6 +8,7 @@ import 'package:game/tentacle_controller.dart';
 import 'package:game/playButton.dart';
 import 'package:nima/nima_actor.dart';
 import 'package:game/flower.dart';
+import 'package:quiver/async.dart';
 
 import 'drag.dart';
 
@@ -27,8 +28,13 @@ class _GameState extends State<GamePage> {
   int flowerId = 0;
   int points;
 
+  double nextHardXCoordinate = 0.0;
+  double nextHardYCoordinate = 0.0;
+
   Timer easyTimer;
   Timer hardTimer;
+  Timer eyesTimer;
+
 
   startEasyTimer() {
     easyTimer = Timer.periodic(const Duration(seconds: 5), (timer){
@@ -50,6 +56,35 @@ class _GameState extends State<GamePage> {
       }else {
         //print('Flower to appear on the left');
       }
+      if(flowerId % 3 == 0) {
+        new Timer(const Duration(seconds: 10), (){
+            double newFlowerYCoordinate = nextHardYCoordinate;
+            double newFlowerXCoordinate = nextHardXCoordinate;
+            //print('Creating HARD flower at '+newFlowerXCoordinate.toString()+" - "+newFlowerYCoordinate.toString());
+            double movement = 5;
+            if(newFlowerXCoordinate > 0.5) {
+              movement *= -1;
+            }
+            createFlower(newFlowerXCoordinate, newFlowerYCoordinate, movement);
+        });
+        new Timer(const Duration(seconds: 7), (){
+          //print('Creating flower!');
+          double newFlowerYCoordinate = new Random().nextInt((MediaQuery.of(context).size.height).toInt() - 100) + (MediaQuery.of(context).size.height * 0.2);
+          double newFlowerXCoordinate = new Random().nextInt(2).toDouble();
+          if(newFlowerXCoordinate > 0.5) {
+            newFlowerXCoordinate = MediaQuery.of(context).size.width;
+            //print('Flower to appear on the right');
+            movement *= -1;
+          }else {
+            //print('Flower to appear on the left');
+          }
+          setState(() {
+            nextHardXCoordinate = newFlowerXCoordinate;
+            nextHardYCoordinate = newFlowerYCoordinate;
+          });
+          _faceController.lookAt(newFlowerXCoordinate, newFlowerYCoordinate);
+        });
+      }
       createFlower(newFlowerXCoordinate, newFlowerYCoordinate, movement);
     });
   }
@@ -57,31 +92,7 @@ class _GameState extends State<GamePage> {
   stopEasyTimer() {
     easyTimer.cancel();
   }
-
-  startHardTimer() {
-    hardTimer = Timer.periodic(const Duration(seconds: 10), (timer){
-      if (!createFlowers) {
-        timer.cancel();
-      }
-      //print('Creating flower!');
-      double newFlowerYCoordinate = new Random().nextInt((MediaQuery.of(context).size.height).toInt() - 100) + (MediaQuery.of(context).size.height * 0.2);
-      double newFlowerXCoordinate = new Random().nextInt(2).toDouble();
-      double movement = 0.2;
-      if(newFlowerXCoordinate > 0.5) {
-        newFlowerXCoordinate = MediaQuery.of(context).size.width;
-        //print('Flower to appear on the right');
-        movement *= -1;
-      }else {
-        //print('Flower to appear on the left');
-      }
-      _faceController.lookAt(newFlowerXCoordinate, newFlowerYCoordinate);
-    });
-  }
-
-  stopHardTimer() {
-    hardTimer.cancel();
-  }
-
+  
   void setTentaclePos(double x, double y) {
     print('Updating tentacle pos to '+x.toString()+" - "+y.toString());
     //tentaclePosX = x;
@@ -93,7 +104,7 @@ class _GameState extends State<GamePage> {
   }
 
   void createFlower(double x, double y, double xMove) {
-    print('Setting new flower in '+x.toString()+" - "+y.toString()+" - "+xMove.toString()+ " with ID: "+flowerId.toString());
+    //print('Setting new flower in '+x.toString()+" - "+y.toString()+" - "+xMove.toString()+ " with ID: "+flowerId.toString());
     //tentaclePosX = x;
     //tentaclePosY = y;
     if(flowerList.length > 10)createFlowers = false;
@@ -112,13 +123,13 @@ class _GameState extends State<GamePage> {
   }
 
   void deleteFlower(int id) {
-    print('DELETING flower ' + id.toString());
-    print('Number of petals BEFORE DELETE: '+flowerList.length.toString());
+    //print('DELETING flower ' + id.toString());
+    //print('Number of petals BEFORE DELETE: '+flowerList.length.toString());
     setState(() {
       flowerList.removeWhere((flower) => flower.id == id);
       points++;
     });
-    print('Number of petals AFTER DELETE: '+flowerList.length.toString());
+    //print('Number of petals AFTER DELETE: '+flowerList.length.toString());
   }
 
   @override
@@ -133,7 +144,8 @@ class _GameState extends State<GamePage> {
 
     ];
     startEasyTimer();
-    startHardTimer();
+    //startHardTimer();
+    //startEyesTimer();
     super.initState();
   }
   @override
@@ -162,7 +174,7 @@ class _GameState extends State<GamePage> {
                         shouldClip: false,
                         fit: BoxFit.contain,
                         artboard: "Artboard",
-                        animation: "idle",
+                        //animation: "idle",
                         color: Colors.red,
                         controller: _faceController,
                       )
@@ -197,6 +209,21 @@ class _GameState extends State<GamePage> {
                         ),
                       )
                   ),
+                  Positioned(
+                      top: 20,
+                      left: 10,
+                      child: IconButton(
+                        icon: Icon(Icons.reply),
+                        color: Colors.black,
+                        iconSize: 45,
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/game');
+                        },
+                      )
+                  ),
+                  MyWidget(
+                    moveTarget: _faceController.lookAt
+                  )
                 ],
               )),
         )
@@ -206,6 +233,8 @@ class _GameState extends State<GamePage> {
   @override
   void dispose () {
     stopEasyTimer();
+    //stopHardTimer();
+    //stopEyesTimer();
     super.dispose();
   }
 
