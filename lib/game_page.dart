@@ -1,9 +1,13 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:game/home_page_paint_controller.dart';
 import 'package:game/tentacle_controller.dart';
 import 'package:game/playButton.dart';
 import 'package:nima/nima_actor.dart';
+import 'package:game/flower.dart';
 
 import 'drag.dart';
 
@@ -18,6 +22,32 @@ class _GameState extends State<GamePage> {
   TentacleController _tentacleController;
   double tentaclePosX;
   double tentaclePosY;
+  List<Petal> petals = [];
+  bool createFlowers = true;
+
+  Timer timer;
+
+  startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 5), (timer){
+      if (!createFlowers) {
+        timer.cancel();
+      }
+      print('Creating flower!');
+      print('Controller'+_homePaintController.toString());
+      double newFlowerYCoordinate = new Random().nextInt((MediaQuery.of(context).size.height).toInt() - 100) + (MediaQuery.of(context).size.height * 0.2);
+      double newFlowerXCoordinate = new Random().nextInt(2).toDouble();
+      double movement = 1;
+      if(newFlowerXCoordinate == 1) {
+        newFlowerXCoordinate = MediaQuery.of(context).size.width;
+        movement *= -1;
+      }
+      setPetalPos(newFlowerXCoordinate, newFlowerYCoordinate, movement);
+    });
+  }
+
+  cancelTimer() {
+    timer.cancel();
+  }
 
   void setTentaclePos(double x, double y) {
     print('Updating tentacle pos to '+x.toString()+" - "+y.toString());
@@ -29,6 +59,23 @@ class _GameState extends State<GamePage> {
     });
   }
 
+  void setPetalPos(double x, double y, double xMove) {
+    print('Setting new flower in '+x.toString()+" - "+y.toString()+" - "+xMove.toString());
+    //tentaclePosX = x;
+    //tentaclePosY = y;
+    print('Number of petals: '+petals.length.toString());
+    if(petals.length > 10)createFlowers = false;
+    setState(() {
+      petals.add(new Petal(
+          x: x,
+          y: y,
+          tx: x,
+          ty: y,
+          xMove: xMove
+      ));
+    });
+  }
+
   @override
   initState() {
     _homePaintController = HomePaintController();
@@ -36,7 +83,17 @@ class _GameState extends State<GamePage> {
     _tentacleController.lookAt(150,10);
     tentaclePosX = 100;
     tentaclePosY = 100;
-    print('Controller'+_homePaintController.toString());
+    petals = [
+      new Petal(
+          x: 600,
+          y: 100,
+          tx: 100,
+          ty: 100,
+          xMove: -4
+      )
+    ];
+    startTimer();
+
     super.initState();
   }
   @override
@@ -49,22 +106,11 @@ class _GameState extends State<GamePage> {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  Positioned.fill(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            new Expanded(
-                                child: FlareActor(
-                                    "assets/paint.flr",
-                                    shouldClip: false,
-                                    fit: BoxFit.cover,
-                                    controller: _homePaintController,
-                                    artboard: "Artboard"
-                                )
-                            )
-                          ]
-                      )
+                  Image.asset(
+                    "assets/homeBackground.png",
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    fit: BoxFit.cover,
                   ),
                   Positioned(
                       height: 400,
@@ -77,20 +123,7 @@ class _GameState extends State<GamePage> {
                         fit: BoxFit.contain,
                         artboard: "Artboard",
                         animation: "idle",
-                      )
-                  ),
-                  Positioned(
-                      height: 400,
-                      top: 150,
-                      left: 10,
-                      width: 400,
-                      child: FlareActor(
-                          "assets/flower.flr",
-                          shouldClip: false,
-                          fit: BoxFit.contain,
-                          artboard: "Artboard",
-                          animation: "rotate",
-                          color: Colors.green,
+                        color: Colors.red,
                       )
                   ),
                   Positioned(
@@ -107,14 +140,32 @@ class _GameState extends State<GamePage> {
                           color: Colors.green,
                       )
                   ),
+                  ...petals
+                  ,
                   MyWidget(
                     moveTarget: _tentacleController.lookAt,
-                    moveTentacle: setTentaclePos,
-                  )
+                    moveTentacle: setPetalPos,
+                  ),
+                  Positioned(
+                      top: 20,
+                      left: ((MediaQuery.of(context).size.width)-100),
+                      child: Text(
+                        '123',
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )
+                  ),
                 ],
               )),
         )
     );
+  }
+
+  @override
+  void dispose () {
+    cancelTimer();
+    super.dispose();
   }
 
 }

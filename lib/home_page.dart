@@ -38,23 +38,11 @@ class _PaintState extends State<HomePage> {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  Positioned.fill(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            new Expanded(
-                                child: FlareActor(
-                                    "assets/paint.flr",
-                                    shouldClip: false,
-                                    fit: BoxFit.cover,
-                                    controller: _homePaintController,
-                                    artboard: "Artboard",
-                                    animation: "showPlay"
-                                )
-                            )
-                          ]
-                      )
+                  Image.asset(
+                    "assets/homeBackground.png",
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    fit: BoxFit.cover,
                   ),
                   Positioned(
                       top: ((MediaQuery.of(context).size.height)/2)-30,
